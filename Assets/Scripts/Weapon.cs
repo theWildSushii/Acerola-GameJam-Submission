@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Pool;
@@ -7,6 +8,8 @@ public class Weapon : MonoBehaviour {
 
     [Range(0f, 12f)]
     [SerializeField] private float fireRate = Mathf.PI;
+    [Min(1)]
+    [SerializeField] private int bulletsToSpawn = 1;
     [SerializeField] private float projectileSpeed = 400f;
     [SerializeField] private float lifetime = 5f;
     [SerializeField] private float damage = 1f;
@@ -43,7 +46,9 @@ public class Weapon : MonoBehaviour {
         if(CanBeUsed) {
             timeToNextUse = Time.time + ( 1f / fireRate );
             OnWeaponUse?.Invoke();
-            activeBullets.Add(new Bullet(this));
+            for(int i = 0; i < bulletsToSpawn; i++) {
+                activeBullets.Add(new Bullet(this));
+            }
         }
     }
 
@@ -53,17 +58,22 @@ public class Weapon : MonoBehaviour {
         }
     }
 
-    Bullet activeBullet;
     RaycastHit2D hit;
     private void FixedUpdate() {
         float deltaTime = Time.fixedDeltaTime / physicsSubsteps;
+        float stepSize = projectileSpeed * deltaTime;
         for(int step = 0; step < physicsSubsteps; step++) {
-            for(int i = 0; i < activeBullets.Count; i++) {
-                activeBullet = activeBullets[i];
+            foreach(Bullet bullet in activeBullets) {
 
-                hit = Physics2D.Raycast(activeBullet.position, activeBullet.direction, projectileSpeed * deltaTime, bulletLayerMask);
+                if(!bullet.active) {
+                    continue;
+                }
+
+                hit = Physics2D.Raycast(bullet.position, bullet.direction, stepSize, bulletLayerMask);
 
                 if(hit.collider) {
+                    bullet.position.x = hit.point.x;
+                    bullet.position.y = hit.point.y;
                     if(hit.collider.TryGetComponent(out IDamageable damageable)) {
                         damageable.ApplyDamage(damage);
                         damageable.PlayDamageFX(hit.point, hit.normal);
@@ -77,29 +87,31 @@ public class Weapon : MonoBehaviour {
                             defaultDamageSFX.Play(hit.point);
                         }
                     }
-
-                    if(activeBullet.vfxTransform) {
-                        bulletVfxPool.Release(activeBullet.vfxTransform);
-                    }
-                    activeBullets.RemoveAt(i--);
+                    bullet.active = false;
                     continue;
+                } else {
+                    bullet.position.x += bullet.direction.x * stepSize;
+                    bullet.position.y += bullet.direction.y * stepSize;
                 }
 
-                activeBullet.lifetime -= deltaTime;
-                if(activeBullet.lifetime <= 0f) {
-                    if(activeBullet.vfxTransform) {
-                        bulletVfxPool.Release(activeBullet.vfxTransform);
-                    }
-                    activeBullets.RemoveAt(i--);
+                bullet.lifetime -= deltaTime;
+                if(bullet.lifetime <= 0f) {
+                    bullet.active = false;
                 }
             }
         }
     }
 
     private void LateUpdate() {
-        if(bulletVfxPool != null) {
-            foreach(Bullet bullet in activeBullets) {
-                bullet.vfxTransform.position = bullet.position;
+        for(int i = 0; i < activeBullets.Count; i++) {
+            if(activeBullets[i].vfxTransform) {
+                activeBullets[i].vfxTransform.position = activeBullets[i].position;
+            }
+            if(!activeBullets[i].active) {
+                if(bulletVfxPool != null) {
+                    bulletVfxPool.Release(activeBullets[i].vfxTransform);
+                }
+                activeBullets.RemoveAt(i--);
             }
         }
     }
@@ -114,6 +126,11 @@ public class Weapon : MonoBehaviour {
     }
 
     private void OnVfxRelease(Transform vfxTransform) {
+        StartCoroutine(ReleaseDelay(vfxTransform));
+    }
+
+    private IEnumerator ReleaseDelay(Transform vfxTransform) {
+        yield return null;
         vfxTransform.gameObject.SetActive(false);
     }
 
@@ -122,10 +139,11 @@ public class Weapon : MonoBehaviour {
     }
 
     public class Bullet {
-        public Vector3 position;
-        public Vector2 direction;
-        public float lifetime;
+        public Vector3 position = Vector3.zero;
+        public Vector2 direction = Vector2.up;
+        public float lifetime = 1f;
         public Transform vfxTransform;
+        public bool active = true;
 
         public Bullet(Weapon weapon) {
             position = weapon.transform.position;
@@ -135,6 +153,7 @@ public class Weapon : MonoBehaviour {
                 vfxTransform = weapon.bulletVfxPool.Get();
                 vfxTransform.position = position;
             }
+            active = true;
         }
     }
 

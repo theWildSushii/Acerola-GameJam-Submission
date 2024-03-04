@@ -53,13 +53,13 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void OnFire(InputAction.CallbackContext context) {
-        if(context.ReadValueAsButton()) {
+        if(context.performed) {
             actor.Weapon.Use();
         }
     }
 
     public void OnPause(InputAction.CallbackContext context) {
-        if(context.ReadValueAsButton()) {
+        if(context.performed) {
             //TODO toggle pause
         }
     }

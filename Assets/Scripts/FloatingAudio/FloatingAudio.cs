@@ -22,6 +22,33 @@ public class FloatingAudio : ScriptableObject {
     [Range(0f, 360f)]
     public float spread = 0f;
 
+    public float pitch {
+        get {
+            return pitchRange.Range(0.5f);
+        }
+        set {
+            pitchRange.Set(value, value);
+        }
+    }
+
+    public float volume {
+        get {
+            return volumeRange.Range(0.5f);
+        }
+        set {
+            volumeRange.Set(value, value);
+        }
+    }
+
+    public float minDistance {
+        get {
+            return minDistanceRange.Range(0.5f);
+        }
+        set {
+            minDistanceRange.Set(value, value);
+        }
+    }
+
     private AudioSource GetAudioSource() {
         AudioSource source = FloatingAudioManager.NextInstance.source;
         source.resource = clips.Random();
@@ -57,16 +84,14 @@ public class FloatingAudio : ScriptableObject {
 
     public void Play(Transform parent) {
         AudioSource source = GetAudioSource();
-        source.transform.parent = parent;
-        source.transform.localPosition = Vector3.zero;
+        source.transform.position = parent.position;
         source.spatialBlend = spatialBlend;
         source.Play();
     }
 
     public void Play(Transform parent, Vector3 localPosition) {
         AudioSource source = GetAudioSource();
-        source.transform.parent = parent;
-        source.transform.localPosition = localPosition;
+        source.transform.position = parent.TransformPoint(localPosition);
         source.spatialBlend = spatialBlend;
         source.Play();
     }

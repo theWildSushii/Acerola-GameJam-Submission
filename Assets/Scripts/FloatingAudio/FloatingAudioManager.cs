@@ -9,7 +9,7 @@ public class FloatingAudioManager : MonoBehaviour {
         get {
             if(!_instance) {
                 GameObject managerObject = new GameObject("Floating Audio Manager");
-                _instance = managerObject.AddComponent<FloatingAudioManager>();
+                return managerObject.AddComponent<FloatingAudioManager>();
             }
             return _instance;
         }
@@ -31,13 +31,13 @@ public class FloatingAudioManager : MonoBehaviour {
     private ObjectPool<FloatingAudioInstance> pool;
 
     private void Awake() {
-        if(Instance) {
-            if(Instance != this) {
+        if(_instance) {
+            if(_instance != this) {
                 Destroy(gameObject);
                 return;
             }
         } else {
-            Instance = this;
+            _instance = this;
             DontDestroyOnLoad(gameObject);
         }
         pool = new ObjectPool<FloatingAudioInstance>(OnCreate, OnGet, OnRelease, OnDestroy, false);
@@ -50,6 +50,9 @@ public class FloatingAudioManager : MonoBehaviour {
         created.transform.localRotation = Quaternion.identity;
         created.SetActive(false);
         AudioSource source = created.AddComponent<AudioSource>();
+        source.playOnAwake = false;
+        source.loop = false;
+        source.Stop();
         FloatingAudioInstance instance = created.AddComponent<FloatingAudioInstance>();
         instance.source = source;
         DontDestroyOnLoad(created);

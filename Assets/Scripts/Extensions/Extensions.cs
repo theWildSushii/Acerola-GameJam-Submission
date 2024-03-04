@@ -85,4 +85,11 @@ public static class Extensions {
     public static float Range(this Vector2 range, float t) {
         return Mathf.Lerp(range.x, range.y, t);
     }
+
+    public static Color ComputedColor(this Light light) {
+        if(light.useColorTemperature) {
+            return Mathf.CorrelatedColorTemperatureToRGB(light.colorTemperature).linear * light.color.linear * light.intensity;
+        }
+        return light.color.linear * light.intensity;
+    }
 }
