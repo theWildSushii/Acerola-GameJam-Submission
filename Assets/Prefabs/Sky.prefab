@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 189478156684128962}
+  - component: {fileID: 8108516144742139975}
   m_Layer: 0
   m_Name: Sky
   m_TagString: Untagged
@@ -33,6 +34,21 @@ Transform:
   - {fileID: 8923370591173479985}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8108516144742139975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913578270156262652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb0f01a011cdcfb4a8b3f075b3cf9107, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sun: {fileID: 8251924417543542395}
+  moon: {fileID: 3708228380075180681}
+  skyColor: {r: 0.66215736, g: 0.84741074, b: 0.9056604, a: 1}
 --- !u!1 &3245426519577224395
 GameObject:
   m_ObjectHideFlags: 0
@@ -78,7 +94,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 90.50967
+  m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208

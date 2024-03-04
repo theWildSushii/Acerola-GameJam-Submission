@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Audio;
 
 [CreateAssetMenu(fileName = "Floating Audio", menuName = "tWS/Floating Audio")]
@@ -21,6 +22,7 @@ public class FloatingAudio : ScriptableObject {
     public float maxDistance = 500f;
     [Range(0f, 360f)]
     public float spread = 0f;
+    public bool simulateSpeedOfSound = false;
 
     public float pitch {
         get {
@@ -76,6 +78,10 @@ public class FloatingAudio : ScriptableObject {
     }
 
     public void Play(Vector3 position) {
+        if(simulateSpeedOfSound) {
+            FloatingAudioManager.Instance.StartCoroutine(SpeedOfSoundDelay(position));
+            return;
+        }
         AudioSource source = GetAudioSource();
         source.transform.position = position;
         source.spatialBlend = spatialBlend;
@@ -83,6 +89,10 @@ public class FloatingAudio : ScriptableObject {
     }
 
     public void Play(Transform parent) {
+        if(simulateSpeedOfSound) {
+            FloatingAudioManager.Instance.StartCoroutine(SpeedOfSoundDelay(parent.position));
+            return;
+        }
         AudioSource source = GetAudioSource();
         source.transform.position = parent.position;
         source.spatialBlend = spatialBlend;
@@ -90,8 +100,20 @@ public class FloatingAudio : ScriptableObject {
     }
 
     public void Play(Transform parent, Vector3 localPosition) {
+        if(simulateSpeedOfSound) {
+            FloatingAudioManager.Instance.StartCoroutine(SpeedOfSoundDelay(parent.TransformPoint(localPosition)));
+            return;
+        }
         AudioSource source = GetAudioSource();
         source.transform.position = parent.TransformPoint(localPosition);
+        source.spatialBlend = spatialBlend;
+        source.Play();
+    }
+
+    private IEnumerator SpeedOfSoundDelay(Vector3 position) {
+        yield return new WaitForSeconds(Vector3.Distance(FloatingAudioManager.Instance.Listener.transform.position, position) / 343f);
+        AudioSource source = GetAudioSource();
+        source.transform.position = position;
         source.spatialBlend = spatialBlend;
         source.Play();
     }

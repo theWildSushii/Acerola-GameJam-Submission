@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SkyManager : MonoBehaviour
-{
+[ExecuteInEditMode]
+public class SkyManager : MonoBehaviour {
 
     [SerializeField] private Light sun;
     [SerializeField] private Light moon;
@@ -21,8 +19,13 @@ public class SkyManager : MonoBehaviour
         }
     }
 
-    private void LateUpdate() {
+    private void Update() {
         Light activeLight = ActiveLight;
+        Color ambientColor = (activeLight.GetComputedColor() * skyColor.linear * 0.2f).gamma;
+        RenderSettings.ambientLight = ambientColor;
+        RenderSettings.ambientGroundColor = ambientColor;
+        RenderSettings.ambientEquatorColor = ambientColor;
+        RenderSettings.ambientSkyColor = ambientColor;
     }
 
 

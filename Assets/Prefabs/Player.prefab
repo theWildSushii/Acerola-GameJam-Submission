@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2292507659131513850}
   - component: {fileID: 4116363032005928479}
   - component: {fileID: 4930809297531127816}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fireRate: 3.1415927
-  projectileSpeed: 400
+  bulletsToSpawn: 1
+  projectileSpeed: 343
   lifetime: 5
   damage: 1
   spread: 0
@@ -107,7 +108,7 @@ MonoBehaviour:
   bulletLayerMask:
     serializedVersion: 2
     m_Bits: 129
-  physicsSubsteps: 1
+  physicsSubsteps: 4
   bulletVfxPrefab: {fileID: 4930538106859373778, guid: cc6d1f8f81ced2f429c71d3a5917749b, type: 3}
   defaultDamageFX: {fileID: 0}
   defaultDamageSFX: {fileID: 0}
@@ -140,7 +141,7 @@ GameObject:
   - component: {fileID: 3747880665204338370}
   - component: {fileID: 2097280896074940620}
   - component: {fileID: 6467252843582460150}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,6 +163,7 @@ Transform:
   m_Children:
   - {fileID: 4652480983848161162}
   - {fileID: 670329760997036125}
+  - {fileID: 4200665290847849834}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &7684860554367548274
@@ -272,7 +274,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6467252843582460150}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
-        m_MethodName: OnAim
+        m_MethodName: OnLook
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -340,6 +342,38 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 9caa3d8a-6b2f-4e8e-8bad-6ede561bd9be
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6467252843582460150}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnAim
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 327c1593-1ab7-4625-bf0c-1aaf40cbc3a7
+    m_ActionName: 'Player/Aim[/Mouse/rightButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6467252843582460150}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnJump
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 49f9e6ad-a803-4ffd-a46b-66f3f754b3cb
+    m_ActionName: 'Player/Jump[/Keyboard/space,/XInputControllerWindows/buttonSouth]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -363,7 +397,6 @@ MonoBehaviour:
     moveSpeed: 5
     moveAcceleration: 64
     aimSpeed: 180
-    baseArmor: 1
   rb: {fileID: 7684860554367548274}
   weapon: {fileID: 4930809297531127816}
   anim: {fileID: 0}
@@ -371,16 +404,52 @@ MonoBehaviour:
   damageSFX: {fileID: 0}
   sightMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 129
   OnActorAlive:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6467252843582460150}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   OnActorDamaged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6467252843582460150}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnDamaged
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnActorDeath:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6467252843582460150}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &6467252843582460150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -395,9 +464,57 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actor: {fileID: 2097280896074940620}
   crosshair: {fileID: 0}
+  jumpDuration: 0.16666667
+  jumpRate: 3.141593
   OnNormalizedHP:
     m_PersistentCalls:
       m_Calls: []
+  OnAimChanged:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!1 &8914533094875621367
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4200665290847849834}
+  m_Layer: 6
+  m_Name: Aim
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4200665290847849834
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8914533094875621367}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7766795393653137098}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!1 &8921255963183976541
 GameObject:
   m_ObjectHideFlags: 0
@@ -409,7 +526,7 @@ GameObject:
   - component: {fileID: 4652480983848161162}
   - component: {fileID: 45022500676498319}
   - component: {fileID: 583658330351773566}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}

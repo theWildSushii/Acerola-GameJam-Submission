@@ -42,6 +42,12 @@ public class Weapon : MonoBehaviour {
         }
     }
 
+    public LayerMask BulletLayerMask {
+        get {
+            return bulletLayerMask;
+        }
+    }
+
     public void Use() {
         if(CanBeUsed) {
             timeToNextUse = Time.time + ( 1f / fireRate );

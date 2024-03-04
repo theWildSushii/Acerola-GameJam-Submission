@@ -86,10 +86,18 @@ public static class Extensions {
         return Mathf.Lerp(range.x, range.y, t);
     }
 
-    public static Color ComputedColor(this Light light) {
+    public static Color GetComputedColor(this Light light) {
         if(light.useColorTemperature) {
             return Mathf.CorrelatedColorTemperatureToRGB(light.colorTemperature).linear * light.color.linear * light.intensity;
         }
         return light.color.linear * light.intensity;
+    }
+
+    public static bool IsZero(this Vector2 value) {
+        return Mathf.Approximately(value.x, 0f) && Mathf.Approximately(value.y, 0f);
+    }
+
+    public static bool IsZero(this Vector3 value) {
+        return Mathf.Approximately(value.x, 0f) && Mathf.Approximately(value.y, 0f) && Mathf.Approximately(value.z, 0f);
     }
 }

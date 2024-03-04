@@ -29,6 +29,16 @@ public class FloatingAudioManager : MonoBehaviour {
     }
 
     private ObjectPool<FloatingAudioInstance> pool;
+    private AudioListener listener;
+
+    public AudioListener Listener {
+        get {
+            if(!listener)  {
+                listener = FindFirstObjectByType<AudioListener>();
+            }
+            return listener;
+        }
+    }
 
     private void Awake() {
         if(_instance) {
@@ -55,7 +65,6 @@ public class FloatingAudioManager : MonoBehaviour {
         source.Stop();
         FloatingAudioInstance instance = created.AddComponent<FloatingAudioInstance>();
         instance.source = source;
-        DontDestroyOnLoad(created);
         return instance;
     }
 
