@@ -5,7 +5,7 @@ public class ActorStats {
     public float currentHP = 10f;
     public float moveSpeed = 5f;
     public float moveAcceleration = 16f;
-    public float aimSpeed = 180f;
+    public float aimSpeed = 1f;
 
     public float NormalizedHP {
         get {

@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sun: {fileID: 8251924417543542395}
   moon: {fileID: 3708228380075180681}
-  skyColor: {r: 0.66215736, g: 0.84741074, b: 0.9056604, a: 1}
+  skyColor: {r: 0.45490196, g: 0.65882355, b: 1, a: 1}
 --- !u!1 &3245426519577224395
 GameObject:
   m_ObjectHideFlags: 0
@@ -67,7 +67,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8923370591173479985
 Transform:
   m_ObjectHideFlags: 0
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_IsGlobal: 1
   priority: 0
   blendDistance: 0
-  weight: 0
+  weight: 1
   sharedProfile: {fileID: 11400000, guid: 968fd57cd40c5db4eb4be5058c07296d, type: 2}
 --- !u!1 &7681985669733690494
 GameObject:
@@ -202,7 +202,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6332922031394313720
 Transform:
   m_ObjectHideFlags: 0

@@ -7,23 +7,38 @@ public class PlayerController : MonoBehaviour {
     public static PlayerController Instance { get; protected set; }
 
     [SerializeField] private Actor actor;
-    [SerializeField] private Transform crosshair;
+    [SerializeField] private PlayerInput playerInput;
+    [SerializeField] private Canvas crosshairCanvas;
+    [SerializeField] private RectTransform crosshair;
     [SerializeField] private float jumpDuration = 0.382f;
     [SerializeField] private float jumpRate = Mathf.PI;
+    [Range(0f, 12f)]
+    [SerializeField] private float normalFireRate = Mathf.PI;
+    [Range(0f, 12f)]
+    [SerializeField] private float autoFireFireRate = 8f;
+    [Range(0f, 1f)]
+    [SerializeField] private float normalWeaponSpread = 0.1f;
+    [Range(0f, 1f)]
+    [SerializeField] private float autoFireWeaponSpread = 0.5f;
 
     public UnityEvent<float> OnNormalizedHP;
-    public UnityEvent<bool> OnAimChanged;
 
     private Vector2 movement = Vector3.zero;
     private float aim = 0f;
-    private Vector2 currentAim = Vector2.zero;
-    private Vector2 aimVelocity = Vector2.zero;
+    private Vector3 currentAim = Vector3.zero;
     private Vector2 targetAim = Vector2.zero;
-    private float speedMultiplier = 1f;
+    private Vector2 aimVelocity = Vector2.zero;
     private float aimMultiplier = 1f;
     private float jumpFactor = 0f;
     private Vector2 jumpDirection = Vector2.up;
     private float timeToNextJump = 0f;
+    private bool isAutoFiring = false;
+
+    public Actor Actor {
+        get {
+            return actor;
+        }
+    }
 
     public Vector2 Position {
         get {
@@ -31,8 +46,23 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    private bool IsCurrentDeviceMouse {
+        get {
+            return playerInput.currentControlScheme == "Keyboard&Mouse";
+        }
+    }
+
+    private float DeltaTimeMultiplier {
+        get {
+            return IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
+        }
+    }
+
     private void Awake() {
         Instance = this;
+        isAutoFiring = false;
+        Actor.Weapon.Spread = normalWeaponSpread;
+        Actor.Weapon.FireRate = normalFireRate;
     }
 
     void OnEnable() {
@@ -46,11 +76,8 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void Update() {
-        if(actor.DamageableOnSight(out targetAim)) {
+        if(isAutoFiring && jumpFactor <= 0f) {
             actor.Attack();
-            aimMultiplier = 0.5f;
-        } else {
-            aimMultiplier = 1f;
         }
     }
 
@@ -59,11 +86,18 @@ public class PlayerController : MonoBehaviour {
             actor.Move(jumpDirection * Mathf.PI, Space.Self);
             jumpFactor -= Time.deltaTime;
         } else {
-            actor.Move(movement * speedMultiplier, Space.Self);
-            actor.Rotate(aim * Time.fixedDeltaTime * speedMultiplier * aimMultiplier);
+            actor.Move(movement, Space.Self);
+            actor.Rotate(aim * DeltaTimeMultiplier * aimMultiplier);
         }
-        currentAim = Vector2.SmoothDamp(currentAim, targetAim, ref aimVelocity, 0.08333f, 128f, Time.fixedDeltaTime);
-        //crosshair.position = currentAim;
+        if(actor.DamageableOnSight(out targetAim)) {
+            aimMultiplier = 0.382f;
+        } else {
+            aimMultiplier = 1f;
+        }
+        currentAim = Vector2.SmoothDamp(currentAim, targetAim, ref aimVelocity, 0.041666f, 343f, Time.fixedUnscaledDeltaTime);
+        //currentAim = targetAim;
+        currentAim.z = actor.Weapon.transform.position.z;
+        crosshair.anchoredPosition = crosshairCanvas.WorldToCanvasPosition(currentAim, playerInput.camera);
     }
 
     public void OnMove(InputAction.CallbackContext context) {
@@ -71,16 +105,29 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void OnLook(InputAction.CallbackContext context) {
-        if(context.control.device == Pointer.current) {
-            aim = ( context.ReadValue<Vector2>().x / Screen.width ) * 32f;
-        } else {
-            aim = context.ReadValue<Vector2>().x;
-        }
+        aim = context.ReadValue<Vector2>().x;
     }
 
     public void OnFire(InputAction.CallbackContext context) {
         if(context.performed && jumpFactor <= 0f) {
-            actor.Weapon.Use();
+            actor.Attack();
+        }
+    }
+
+    public void OnAutoFire(InputAction.CallbackContext context) {
+        isAutoFiring = context.ReadValueAsButton();
+        if(isAutoFiring) {
+            Actor.Weapon.Spread =  autoFireWeaponSpread;
+            Actor.Weapon.FireRate = autoFireFireRate;
+        } else {
+            Actor.Weapon.Spread = normalWeaponSpread;
+            Actor.Weapon.FireRate = normalFireRate;
+        }
+    }
+
+    public void OnReload(InputAction.CallbackContext context) {
+        if(context.performed) {
+            actor.Reload();
         }
     }
 
@@ -88,17 +135,6 @@ public class PlayerController : MonoBehaviour {
         if(context.performed) {
             //TODO toggle pause
         }
-    }
-
-    bool previousAimValue = false;
-    bool isAiming = false;
-    public void OnAim(InputAction.CallbackContext context) {
-        isAiming = context.ReadValueAsButton();
-        if(previousAimValue != isAiming) {
-            OnAimChanged?.Invoke(isAiming);
-            speedMultiplier = isAiming ? 0.618f : 1f;
-        }
-        previousAimValue = isAiming;
     }
 
     public void OnJump(InputAction.CallbackContext context) {

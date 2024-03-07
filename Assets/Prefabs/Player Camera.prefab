@@ -50,7 +50,7 @@ MonoBehaviour:
     Enabled: 1
     m_Value: 10
   OutputChannel: 1
-  StandbyUpdate: 2
+  StandbyUpdate: 1
   m_StreamingVersion: 20230301
   m_LegacyPriority: 0
   Target:
@@ -60,8 +60,8 @@ MonoBehaviour:
   Lens:
     FieldOfView: 41.20535
     OrthographicSize: 5
-    NearClipPlane: 0.0625
-    FarClipPlane: 128
+    NearClipPlane: 12
+    FarClipPlane: 48
     Dutch: 0
     ModeOverride: 0
     PhysicalProperties:
@@ -93,7 +93,7 @@ MonoBehaviour:
   ShoulderOffset: {x: 0, y: 0, z: 0}
   VerticalArmLength: 0
   CameraSide: 0.5
-  CameraDistance: 16
+  CameraDistance: 24
   AvoidObstacles:
     Enabled: 0
     CollisionFilter:

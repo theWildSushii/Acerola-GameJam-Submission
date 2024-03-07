@@ -10,8 +10,8 @@ public class FloatingState : ScriptableObject {
     [Tooltip("Allows multiple concurrent floating states to be active, calling EnterState() only replaces the state with the same channel")]
     [SerializeField] private int channel = 0;
 
+    public event UnityAction<bool> OnStateChanged;
     public event UnityAction OnStateEnter;
-
     public event UnityAction OnStateExit;
 
     public bool IsActive {
@@ -25,11 +25,13 @@ public class FloatingState : ScriptableObject {
 
     public void EnterState() {
         if(currentStates.ContainsKey(channel)) {
+            currentStates[channel].OnStateChanged?.Invoke(false);
             currentStates[channel].OnStateExit?.Invoke();
             currentStates[channel] = this;
         } else {
             currentStates.Add(channel, this);
         }
+        OnStateChanged?.Invoke(true);
         OnStateEnter?.Invoke();
     }
 

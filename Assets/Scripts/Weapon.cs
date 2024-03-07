@@ -10,6 +10,9 @@ public class Weapon : MonoBehaviour {
     [SerializeField] private float fireRate = Mathf.PI;
     [Min(1)]
     [SerializeField] private int bulletsToSpawn = 1;
+    [SerializeField] private int ammoCapacity = 10;
+    [SerializeField] private int ammoReloaded = 10;
+    [SerializeField] private float reloadTime = 1f;
     [SerializeField] private float projectileSpeed = 400f;
     [SerializeField] private float lifetime = 5f;
     [SerializeField] private float damage = 1f;
@@ -24,21 +27,45 @@ public class Weapon : MonoBehaviour {
     [SerializeField] private FloatingAudio defaultDamageSFX;
 
     [SerializeField] private UnityEvent OnWeaponUse;
+    [SerializeField] private UnityEvent OnWeaponReload;
 
     private float timeToNextUse = 0f;
 
     private ObjectPool<Transform> bulletVfxPool;
     private List<Bullet> activeBullets = new List<Bullet>();
 
+    private int currentAmmo = 10;
+
     public bool CanBeUsed {
         get {
-            return Time.time >= timeToNextUse;
+            return Time.time >= timeToNextUse && currentAmmo > 0;
         }
     }
+
+    public bool IsReloading { get; protected set; } = false;
 
     public float MaxOptimalRange {
         get {
             return maxOptimalRange;
+        }
+    }
+
+    public float Spread {
+        get {
+            return spread;
+        }
+        set {
+            spread = Mathf.Clamp01(value);
+        }
+    }
+
+
+    public float FireRate {
+        get {
+            return fireRate;
+        }
+        set {
+            fireRate = Mathf.Clamp(value, 0f, 12f);
         }
     }
 
@@ -51,14 +78,41 @@ public class Weapon : MonoBehaviour {
     public void Use() {
         if(CanBeUsed) {
             timeToNextUse = Time.time + ( 1f / fireRate );
-            OnWeaponUse?.Invoke();
+            StopAllCoroutines();
+            IsReloading = false;
+            currentAmmo--;
             for(int i = 0; i < bulletsToSpawn; i++) {
                 activeBullets.Add(new Bullet(this));
             }
+            if(currentAmmo <= 0) {
+                Reload();
+            }
+            OnWeaponUse?.Invoke();
         }
     }
 
+    public void Reload() {
+        if(IsReloading) {
+            return;
+        }
+        if(currentAmmo < ammoCapacity) {
+            StartCoroutine(ReloadRoutine());
+        }
+    }
+
+    private IEnumerator ReloadRoutine() {
+        IsReloading = true;
+        OnWeaponReload?.Invoke();
+        while(currentAmmo < ammoCapacity) {
+            yield return new WaitForSeconds(reloadTime);
+            currentAmmo += ammoReloaded;
+        }
+        currentAmmo = ammoCapacity;
+        IsReloading = false;
+    }
+
     private void Awake() {
+        currentAmmo = ammoCapacity;
         if(bulletVfxPrefab) {
             bulletVfxPool = new ObjectPool<Transform>(OnVfxCreate, OnVfxGet, OnVfxRelease, OnVfxDestroy, false);
         }

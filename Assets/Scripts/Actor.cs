@@ -49,6 +49,12 @@ public class Actor : MonoBehaviour, IDamageable {
         }
     }
 
+    public LayerMask SightLayerMask {
+        get {
+            return sightMask;
+        }
+    }
+
     private void Awake() {
         moveZHash = Animator.StringToHash("move.z");
         moveXHash = Animator.StringToHash("move.x");
@@ -139,6 +145,13 @@ public class Actor : MonoBehaviour, IDamageable {
         }
     }
 
+    Vector2 targetDirection = Vector3.zero;
+    public void MoveTowards(Vector2 destination) {
+        targetDirection = destination - Position;
+        targetDirection = Vector2.ClampMagnitude(targetDirection, 1f);
+        Move(targetDirection, Space.World);
+    }
+
     public void Rotate(float ammount) {
         if(!enabled) {
             return;
@@ -154,16 +167,34 @@ public class Actor : MonoBehaviour, IDamageable {
         }
         direction = ( targetPoint - Position ).normalized;
         rotateAmmount = Vector3.Cross(direction, transform.up).z;
-        Rotate(rotateAmmount * deltaTime);
+        Rotate(rotateAmmount * 300f * deltaTime);
+    }
+
+    public bool CanAttack {
+        get {
+            if(weapon) {
+                return weapon.CanBeUsed;
+            }
+            return false;
+        }
     }
 
     public void Attack() {
         if(!enabled) {
             return;
         }
-        //if(weapon) {
-        //    weapon.Use();
-        //}
+        if(weapon) {
+            weapon.Use();
+        }
+    }
+
+    public void Reload() {
+        if(!enabled) {
+            return;
+        }
+        if(weapon) {
+            weapon.Reload();
+        }
     }
 
     public void ApplyDamage(float ammount) {
