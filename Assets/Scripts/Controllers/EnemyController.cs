@@ -120,8 +120,10 @@ public class EnemyController : MonoBehaviour {
         }
         if(actor.DamageableOnSight()) {
             actor.Attack();
-            targetPoint = actor.Position;
-            return;
+            if(!actor.Weapon.IsReloading) {
+                targetPoint = actor.Position;
+                return;
+            }
         }
         targetPoint = lastKnownPlayerPosition + playerOffset;
     }
@@ -182,6 +184,13 @@ public class EnemyController : MonoBehaviour {
 
     public void OnDeath() {
         ParentPool.Release(this);
+    }
+
+    public void OnDamage(Actor actor) {
+        if(ai.CurrentState == idle) {
+            SearchPoint(PlayerController.Instance.Position);
+        }
+        CommandAttackAt(actor.Position);
     }
 
 #if UNITY_EDITOR

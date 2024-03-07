@@ -198,8 +198,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats:
-    baseHP: 3.1415927
-    currentHP: 3.1415927
+    baseHP: 1.9
+    currentHP: 1.9
     moveSpeed: 4
     moveAcceleration: 40
     aimSpeed: 2
@@ -228,7 +228,19 @@ MonoBehaviour:
         m_CallState: 2
   OnActorDamaged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8947277194675799676}
+        m_TargetAssemblyTypeName: EnemyController, Assembly-CSharp
+        m_MethodName: OnDamage
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnActorDeath:
     m_PersistentCalls:
       m_Calls:

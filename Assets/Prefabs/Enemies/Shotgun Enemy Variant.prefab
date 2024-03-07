@@ -89,6 +89,10 @@ PrefabInstance:
       value: 66.66666
       objectReference: {fileID: 0}
     - target: {fileID: 8339173494484377230, guid: df61146795867d54d93651313d75fd1a, type: 3}
+      propertyPath: emptyBulletsOnReload
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8339173494484377230, guid: df61146795867d54d93651313d75fd1a, type: 3}
       propertyPath: OnWeaponReload.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -138,7 +142,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8947277194675799676, guid: df61146795867d54d93651313d75fd1a, type: 3}
       propertyPath: stressContribution
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -4,12 +4,15 @@ using UnityEngine.Pool;
 
 public class EnemyManager : MonoBehaviour {
 
+    [SerializeField] private float tickRate = Mathf.PI;
     [SerializeField] private float targetStress = 10f;
     [SerializeField] private float streesOverTime = 0.01f;
     [SerializeField] private EnemyController[] enemyPrefabs;
     [SerializeField] private Transform[] spawnPoints;
 
     private List<EnemyPool> pools = new List<EnemyPool>();
+
+    private float timeToNextTick = 0f;
 
     private void Awake() {
         foreach(EnemyController prefab in enemyPrefabs) {
@@ -18,18 +21,22 @@ public class EnemyManager : MonoBehaviour {
     }
 
     private void Update() {
+        if(Time.time < timeToNextTick) {
+            return;
+        }
+        timeToNextTick = Time.time + ( 1f / tickRate );
         if(EnemyController.CurrentStress < targetStress) {
             EnemyPool pool = pools.Random();
             if(EnemyController.CurrentStress + pool.StressContribution <= targetStress) {
                 EnemyController spawned = pool.Get();
                 System.Array.Sort(spawnPoints, (a, b) => {
-                    float sqrDistanceA = (PlayerController.Instance.Position - (Vector2)a.transform.position).sqrMagnitude;
-                    float sqrDistanceB = (PlayerController.Instance.Position - (Vector2)b.transform.position).sqrMagnitude;
+                    float sqrDistanceA = ( PlayerController.Instance.Position - (Vector2)a.transform.position ).sqrMagnitude;
+                    float sqrDistanceB = ( PlayerController.Instance.Position - (Vector2)b.transform.position ).sqrMagnitude;
                     return -sqrDistanceA.CompareTo(sqrDistanceB);
                 });
                 float random = Random.value;
                 random = random * random * random;
-                spawned.transform.position = (Vector2)spawnPoints[Mathf.FloorToInt(random * (spawnPoints.Length - 1))].position;
+                spawned.transform.position = (Vector2)spawnPoints[Mathf.FloorToInt(random * ( spawnPoints.Length - 1 ))].position;
                 spawned.SearchPoint(PlayerController.Instance.Position);
             }
         }

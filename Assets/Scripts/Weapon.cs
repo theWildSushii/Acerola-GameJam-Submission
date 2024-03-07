@@ -12,6 +12,7 @@ public class Weapon : MonoBehaviour {
     [SerializeField] private int bulletsToSpawn = 1;
     [SerializeField] private int ammoCapacity = 10;
     [SerializeField] private int ammoReloaded = 10;
+    [SerializeField] private bool emptyBulletsOnReload = true;
     [SerializeField] private float reloadTime = 1f;
     [SerializeField] private float projectileSpeed = 400f;
     [SerializeField] private float lifetime = 5f;
@@ -28,6 +29,7 @@ public class Weapon : MonoBehaviour {
 
     [SerializeField] private UnityEvent OnWeaponUse;
     [SerializeField] private UnityEvent OnWeaponReload;
+    [SerializeField] private UnityEvent<string> OnWeaponAmmoCounterUpdated;
 
     private float timeToNextUse = 0f;
 
@@ -75,12 +77,22 @@ public class Weapon : MonoBehaviour {
         }
     }
 
+    private void OnEnable() {
+        UpdateAmmoCounter();
+    }
+
+    private void OnDisable() {
+        StopAllCoroutines();
+        IsReloading = false;
+    }
+
     public void Use() {
         if(CanBeUsed) {
             timeToNextUse = Time.time + ( 1f / fireRate );
             StopAllCoroutines();
             IsReloading = false;
             currentAmmo--;
+            UpdateAmmoCounter();
             for(int i = 0; i < bulletsToSpawn; i++) {
                 activeBullets.Add(new Bullet(this));
             }
@@ -88,7 +100,15 @@ public class Weapon : MonoBehaviour {
                 Reload();
             }
             OnWeaponUse?.Invoke();
+        } else {
+            if(currentAmmo <= 0 && !IsReloading) {
+                Reload();
+            }
         }
+    }
+
+    public void UpdateAmmoCounter() {
+        OnWeaponAmmoCounterUpdated?.Invoke(currentAmmo + "/" + ammoCapacity);
     }
 
     public void Reload() {
@@ -103,11 +123,17 @@ public class Weapon : MonoBehaviour {
     private IEnumerator ReloadRoutine() {
         IsReloading = true;
         OnWeaponReload?.Invoke();
+        if(emptyBulletsOnReload) {
+            currentAmmo = 0;
+            UpdateAmmoCounter();
+        }
         while(currentAmmo < ammoCapacity) {
             yield return new WaitForSeconds(reloadTime);
             currentAmmo += ammoReloaded;
+            UpdateAmmoCounter();
         }
         currentAmmo = ammoCapacity;
+        UpdateAmmoCounter();
         IsReloading = false;
     }
 
