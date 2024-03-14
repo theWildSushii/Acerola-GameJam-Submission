@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c83d6d15c42b3844b970bda00c199fe2
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - navigationAudio: {fileID: 11400000, guid: dca0f2ba29dee7c4db44d80b5a83f467, type: 2}
+  - submitAudio: {fileID: 11400000, guid: 0bc7494156d678344bed2e636f2b5fb5, type: 2}
+  - scrollRect: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

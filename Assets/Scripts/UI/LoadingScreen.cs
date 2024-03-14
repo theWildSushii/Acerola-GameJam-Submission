@@ -16,14 +16,12 @@ public class LoadingScreen : MonoBehaviour {
 
     private void Awake() {
         if(Instance) {
-            Destroy(Instance.gameObject);
+            if(Instance != this) {
+                Destroy(Instance.gameObject);
+            }
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-    }
-
-    private void OnEnable() {
-        async.allowSceneActivation = false;
     }
 
     private void Update() {
@@ -38,15 +36,16 @@ public class LoadingScreen : MonoBehaviour {
             Instance.async.completed += Instance.OnSceneLoaded;
             Instance.OnLoadStarted?.Invoke();
             Instance.IsLoading = true;
+            Instance.gameObject.SetActive(true);
         } else {
             SceneManager.LoadScene(index);
         }
     }
 
     private void OnSceneLoaded(AsyncOperation obj) {
-        async.allowSceneActivation = true;
         OnProgressUpdated?.Invoke(1f);
         IsLoading = false;
         OnLoadFinish?.Invoke();
+        Instance.gameObject.SetActive(false);
     }
 }

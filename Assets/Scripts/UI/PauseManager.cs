@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Audio;
 
 public class PauseManager : MonoBehaviour {
 
@@ -7,11 +7,18 @@ public class PauseManager : MonoBehaviour {
 
     [SerializeField] private BasicChannel OnPause;
     [SerializeField] private BasicChannel OnResume;
+    [SerializeField] private AudioMixer mixer;
+    [Range(10f, 22000f)]
+    [SerializeField] private float LowpassHz = 700f;
 
     public bool IsPaused { get; protected set; } = false;
 
     private void Awake() {
         Instance = this;
+    }
+
+    private void OnDisable() {
+        Resume();
     }
 
     public void TogglePause() {
@@ -23,29 +30,24 @@ public class PauseManager : MonoBehaviour {
     }
 
     public void Pause() {
+        if(IsPaused) {
+            return;
+        }
         IsPaused = true;
+        mixer.SetFloat("LowpassHz", LowpassHz);
         Time.timeScale = 0f;
         StopAllCoroutines();
         OnPause?.FireEvent();
     }
 
     public void Resume() {
+        if(!IsPaused) {
+            return;
+        }
         IsPaused = false;
-        StartCoroutine(RecoverTimeScale());
-        OnResume?.FireEvent();
-    }
-
-    //We slowly set timeScale to 1 instead of setting it
-    //directly to give player time to react to any
-    //obstacles they forgot when they paused
-    private IEnumerator RecoverTimeScale() {
-        WaitForEndOfFrame wait = new WaitForEndOfFrame();
-        float velocity = 0f;
-        do {
-            Time.timeScale = Mathf.SmoothDamp(Time.timeScale, 1f, ref velocity, 2f/24f, 1f, Time.unscaledDeltaTime);
-            yield return wait;
-        } while(!Mathf.Approximately(Time.timeScale, 1f));
         Time.timeScale = 1f;
+        mixer.SetFloat("LowpassHz", 22000f);
+        OnResume?.FireEvent();
     }
 
 }

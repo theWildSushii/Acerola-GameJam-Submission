@@ -160,6 +160,8 @@ AudioMixerController:
     name: MusicVolume
   - guid: a0d05dc663f50174e94bb32d2d905a33
     name: LowpassHz
+  - guid: 5916308d3b4e76b40becc675f71321cf
+    name: UIVolume
   m_AudioMixerGroupViews:
   - guids:
     - 51236368d5db79947a62fe997268cf19

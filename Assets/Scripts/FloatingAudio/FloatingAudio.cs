@@ -111,11 +111,20 @@ public class FloatingAudio : ScriptableObject {
     }
 
     private IEnumerator SpeedOfSoundDelay(Vector3 position) {
-        yield return new WaitForSeconds(Vector3.Distance(FloatingAudioManager.Instance.Listener.transform.position, position) / 343f);
-        AudioSource source = GetAudioSource();
-        source.transform.position = position;
-        source.spatialBlend = spatialBlend;
-        source.Play();
+        float timeToReach = Vector3.Distance(FloatingAudioManager.Instance.Listener.transform.position, position) / 343f;
+        if(timeToReach <= 0.0416666666666666666666666666666666666666666f) {
+            AudioSource source = GetAudioSource();
+            source.transform.position = position;
+            source.spatialBlend = spatialBlend;
+            source.Play();
+            yield return null;
+        } else {
+            yield return new WaitForSeconds(timeToReach);
+            AudioSource source = GetAudioSource();
+            source.transform.position = position;
+            source.spatialBlend = spatialBlend;
+            source.Play();
+        }
     }
 
 }

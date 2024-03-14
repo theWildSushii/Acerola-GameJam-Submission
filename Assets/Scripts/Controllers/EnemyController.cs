@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -27,6 +28,7 @@ public class EnemyController : MonoBehaviour {
     [SerializeField] private float evadeTime = 1.5f;
     [SerializeField] private float sightRadius = 10f;
     [SerializeField] private float stressContribution = 1f;
+    [SerializeField] private GameplayModel gameplayModel;
 
     private PrivateStateMachine ai;
     private PrivateStateMachine.State idle;
@@ -43,6 +45,7 @@ public class EnemyController : MonoBehaviour {
     private float sightRadiusSqr = 100f;
     private float weaponRadiusSqr = 100f;
     private float searchTimer = 0f;
+    private float moveSpeed = 1f;
 
     public ObjectPool<EnemyController> ParentPool { protected get; set; }
 
@@ -59,7 +62,7 @@ public class EnemyController : MonoBehaviour {
     }
 
     private void Awake() {
-        idle = new PrivateStateMachine.State(onUpdate: IdleUpdate);
+        idle = new PrivateStateMachine.State(onEnter: IdleEnter, onUpdate: IdleUpdate, onExit: IdleExit);
         combat = new PrivateStateMachine.State(onUpdate: CombatUpdate);
         searching = new PrivateStateMachine.State(onEnter: SearchingEnter, onUpdate: SearchingUpdate);
         ai = new PrivateStateMachine(idle);
@@ -88,8 +91,13 @@ public class EnemyController : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        actor.MoveTowards(targetPoint);
-        actor.AimTowards(targetAim, Time.fixedDeltaTime);
+        actor.MoveTowards(targetPoint, moveSpeed);
+        actor.AimTowards(targetAim, Time.fixedDeltaTime, moveSpeed);
+    }
+
+    private void IdleEnter() {
+        actor.Reload();
+        moveSpeed = 0.5f;
     }
 
     private void IdleUpdate() {
@@ -105,10 +113,14 @@ public class EnemyController : MonoBehaviour {
         }
     }
 
+    private void IdleExit() {
+        moveSpeed = 1f;
+    }
+
     private void CombatUpdate() {
         if(Time.time >= timeToNextMove) {
             timeToNextMove = Time.time + evadeTime;
-            playerOffset = Random.insideUnitCircle * actor.Weapon.MaxOptimalRange;
+            playerOffset = Random.insideUnitCircle * actor.MaxOptimalRange;
         }
         if(CheckIfPlayerIsInSight()) {
             lastKnownPlayerPosition = PlayerController.Instance.Position;
@@ -120,7 +132,7 @@ public class EnemyController : MonoBehaviour {
         }
         if(actor.DamageableOnSight()) {
             actor.Attack();
-            if(!actor.Weapon.IsReloading) {
+            if(!actor.IsReloading) {
                 targetPoint = actor.Position;
                 return;
             }
@@ -136,6 +148,7 @@ public class EnemyController : MonoBehaviour {
 
     private void SearchingEnter() {
         searchTimer = searchingTime;
+        actor.Reload();
     }
 
     private void SearchingUpdate() {
@@ -183,6 +196,12 @@ public class EnemyController : MonoBehaviour {
     }
 
     public void OnDeath() {
+        gameplayModel.score.Value += stressContribution;
+        StartCoroutine(DeathDelay());
+    }
+
+    private IEnumerator DeathDelay() {
+        yield return new WaitForSeconds(10f);
         ParentPool.Release(this);
     }
 

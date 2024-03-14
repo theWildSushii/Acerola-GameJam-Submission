@@ -60,7 +60,7 @@ MonoBehaviour:
   Lens:
     FieldOfView: 41.20535
     OrthographicSize: 5
-    NearClipPlane: 12
+    NearClipPlane: 6
     FarClipPlane: 48
     Dutch: 0
     ModeOverride: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
       GateFit: 4
       SensorSize: {x: 70.41, y: 52.63}
       LensShift: {x: 0, y: 0.25}
-      FocusDistance: 16
+      FocusDistance: 20
       Iso: 200
       ShutterSpeed: 0.005
       Aperture: 5.6
@@ -93,7 +93,7 @@ MonoBehaviour:
   ShoulderOffset: {x: 0, y: 0, z: 0}
   VerticalArmLength: 0
   CameraSide: 0.5
-  CameraDistance: 24
+  CameraDistance: 20
   AvoidObstacles:
     Enabled: 0
     CollisionFilter:

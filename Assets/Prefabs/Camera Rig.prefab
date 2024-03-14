@@ -29,8 +29,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1195041473825539673}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0000005364418, y: -0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 1.4999905, z: -8.000001}
+  m_LocalRotation: {x: 0.7071064, y: -0, z: -0, w: 0.7071072}
+  m_LocalPosition: {x: 0, y: 20, z: -0.000020980835}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46,30 +46,30 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 1}
+  m_BackGroundColor: {r: 0.20576489, g: 0.18922275, b: 0.17321217, a: 0.2}
   m_projectionMatrixMode: 2
   m_GateFitMode: 4
   m_FOVAxisMode: 0
   m_Iso: 200
   m_ShutterSpeed: 0.005
   m_Aperture: 5.6
-  m_FocusDistance: 16
-  m_FocalLength: 139.99998
+  m_FocusDistance: 20
+  m_FocalLength: 70
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
   m_Anamorphism: 0
   m_SensorSize: {x: 70.41, y: 52.63}
-  m_LensShift: {x: 0, y: 0}
+  m_LensShift: {x: 0, y: 0.25}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.0625
-  far clip plane: 128
-  field of view: 21.290705
+  near clip plane: 12
+  far clip plane: 48
+  field of view: 41.20535
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -119,7 +119,7 @@ MonoBehaviour:
     DefaultMode: 2
   DefaultBlend:
     Style: 1
-    Time: 0.2
+    Time: 1.5
     CustomCurve:
       serializedVersion: 2
       m_Curve: []

@@ -46,9 +46,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb0f01a011cdcfb4a8b3f075b3cf9107, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sunIntensity: 76.10925
+  sunTemperatureRange: {x: 4100, y: 6500}
   sun: {fileID: 8251924417543542395}
   moon: {fileID: 3708228380075180681}
   skyColor: {r: 0.45490196, g: 0.65882355, b: 1, a: 1}
+  sunVolume: {fileID: 974141225765970235}
 --- !u!1 &3245426519577224395
 GameObject:
   m_ObjectHideFlags: 0
@@ -61,6 +64,7 @@ GameObject:
   - component: {fileID: 3708228380075180681}
   - component: {fileID: 5046821445379163691}
   - component: {fileID: 712017244143812438}
+  - component: {fileID: 1518261624255835934}
   m_Layer: 0
   m_Name: Moon
   m_TagString: Untagged
@@ -76,13 +80,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3245426519577224395}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.28006452, y: 0.40193385, z: -0.13059622, w: 0.86195}
+  m_LocalRotation: {x: 0.309017, y: 0, z: 0, w: 0.95105654}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 189478156684128962}
-  m_LocalEulerAnglesHint: {x: 36, y: 50, z: 0}
+  m_LocalEulerAnglesHint: {x: 36, y: 0, z: 0}
 --- !u!108 &3708228380075180681
 Light:
   m_ObjectHideFlags: 0
@@ -133,7 +137,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 1
+  m_Lightmapping: 4
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 0.5, y: 0.5}
   m_BounceIntensity: 1
@@ -184,6 +188,20 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   sharedProfile: {fileID: 11400000, guid: 968fd57cd40c5db4eb4be5058c07296d, type: 2}
+--- !u!114 &1518261624255835934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3245426519577224395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 733f6625c54fd754e86d96b76bf39059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  angularSpeed: {x: 0, y: 0, z: 0.03934426}
+  space: 1
 --- !u!1 &7681985669733690494
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,13 +214,14 @@ GameObject:
   - component: {fileID: 8251924417543542395}
   - component: {fileID: 1891882958220879239}
   - component: {fileID: 974141225765970235}
+  - component: {fileID: 6566568572404963179}
   m_Layer: 0
   m_Name: Sun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6332922031394313720
 Transform:
   m_ObjectHideFlags: 0
@@ -211,13 +230,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7681985669733690494}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
+  m_LocalRotation: {x: 0.309017, y: 0, z: 0, w: 0.95105654}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 189478156684128962}
-  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 36, y: 0, z: 0}
 --- !u!108 &8251924417543542395
 Light:
   m_ObjectHideFlags: 0
@@ -229,7 +248,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 76.10925
+  m_Intensity: 61.57368
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -268,11 +287,11 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 1
+  m_Lightmapping: 4
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 0.5, y: 0.5}
   m_BounceIntensity: 1
-  m_ColorTemperature: 6500
+  m_ColorTemperature: 6041.6406
   m_UseColorTemperature: 1
   m_BoundingSphereOverride: {x: 4.044e-42, y: 2.524355e-29, z: 0, w: 6.445401e-39}
   m_UseBoundingSphereOverride: 0
@@ -315,7 +334,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IsGlobal: 1
-  priority: 0
+  priority: 5
   blendDistance: 0
-  weight: 1
+  weight: 0.809017
   sharedProfile: {fileID: 11400000, guid: 204075a18f63625418d61f92702b199c, type: 2}
+--- !u!114 &6566568572404963179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7681985669733690494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 733f6625c54fd754e86d96b76bf39059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  angularSpeed: {x: 0, y: 1.2, z: 0}
+  space: 1

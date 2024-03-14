@@ -25,7 +25,7 @@ MonoBehaviour:
   m_SupportsTerrainHoles: 0
   m_SupportsHDR: 1
   m_HDRColorBufferPrecision: 1
-  m_MSAA: 1
+  m_MSAA: 8
   m_RenderScale: 1
   m_UpscalingFilter: 0
   m_FsrOverrideSharpness: 0
@@ -77,7 +77,7 @@ MonoBehaviour:
   m_ColorGradingLutSize: 64
   m_UseFastSRGBLinearConversion: 0
   m_SupportDataDrivenLensFlare: 0
-  m_SupportScreenSpaceLensFlare: 1
+  m_SupportScreenSpaceLensFlare: 0
   m_ShadowType: 1
   m_LocalShadowsSupported: 0
   m_LocalShadowsAtlasResolution: 256

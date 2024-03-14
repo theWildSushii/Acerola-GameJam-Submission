@@ -6,13 +6,15 @@ public class EnemyManager : MonoBehaviour {
 
     [SerializeField] private float tickRate = Mathf.PI;
     [SerializeField] private float targetStress = 10f;
-    [SerializeField] private float streesOverTime = 0.01f;
+    [SerializeField] private float stressOverTime = 0.05f;
     [SerializeField] private EnemyController[] enemyPrefabs;
     [SerializeField] private Transform[] spawnPoints;
 
     private List<EnemyPool> pools = new List<EnemyPool>();
 
     private float timeToNextTick = 0f;
+
+    private bool isSpawning = true;
 
     private void Awake() {
         foreach(EnemyController prefab in enemyPrefabs) {
@@ -21,40 +23,30 @@ public class EnemyManager : MonoBehaviour {
     }
 
     private void Update() {
+        targetStress += stressOverTime * Time.deltaTime;
         if(Time.time < timeToNextTick) {
             return;
         }
         timeToNextTick = Time.time + ( 1f / tickRate );
-        if(EnemyController.CurrentStress < targetStress) {
-            EnemyPool pool = pools.Random();
-            if(EnemyController.CurrentStress + pool.StressContribution <= targetStress) {
-                EnemyController spawned = pool.Get();
-                System.Array.Sort(spawnPoints, (a, b) => {
-                    float sqrDistanceA = ( PlayerController.Instance.Position - (Vector2)a.transform.position ).sqrMagnitude;
-                    float sqrDistanceB = ( PlayerController.Instance.Position - (Vector2)b.transform.position ).sqrMagnitude;
-                    return -sqrDistanceA.CompareTo(sqrDistanceB);
-                });
-                float random = Random.value;
-                random = random * random * random;
-                spawned.transform.position = (Vector2)spawnPoints[Mathf.FloorToInt(random * ( spawnPoints.Length - 1 ))].position;
-                spawned.SearchPoint(PlayerController.Instance.Position);
+        if(isSpawning) {
+            if(EnemyController.CurrentStress < targetStress) {
+                EnemyPool pool = pools.Random();
+                if(EnemyController.CurrentStress + pool.StressContribution <= targetStress) {
+                    EnemyController spawned = pool.Get();
+                    spawned.transform.position = SpawnPoint.RandomPoint;
+                    spawned.SearchPoint(PlayerController.Instance.Position);
+                    if(EnemyController.CurrentStress >= targetStress * 0.9f) {
+                        isSpawning = false;
+                    }
+                }
+            }
+        } else {
+            if(EnemyController.CurrentStress <= targetStress * 0.382f) {
+                isSpawning = true;
             }
         }
-        targetStress += streesOverTime * Time.deltaTime;
     }
 
-#if UNITY_EDITOR
-    private void OnDrawGizmos() {
-        if(spawnPoints.Length <= 0) {
-            return;
-        }
-        Gizmos.color = Color.green;
-        foreach(Transform spawnPoint in spawnPoints) {
-            Gizmos.matrix = spawnPoint.localToWorldMatrix;
-            Gizmos.DrawWireSphere(Vector3.zero, 0.5f);
-        }
-    }
-#endif
 
     private class EnemyPool {
         public ObjectPool<EnemyController> pool;

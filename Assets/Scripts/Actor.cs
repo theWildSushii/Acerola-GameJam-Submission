@@ -20,7 +20,7 @@ public class Actor : MonoBehaviour, IDamageable {
 
     private int moveZHash = 0;
     private int moveXHash = 0;
-    private int deadHash = 0;
+    private int isAliveHash = 0;
 
     public Vector2 Position {
         get {
@@ -49,6 +49,18 @@ public class Actor : MonoBehaviour, IDamageable {
         }
     }
 
+    public float MaxOptimalRange {
+        get {
+            return weapon ? weapon.MaxOptimalRange : 10f;
+        }
+    }
+
+    public bool IsReloading {
+        get {
+            return weapon ? weapon.IsReloading : false;
+        }
+    }
+
     public LayerMask SightLayerMask {
         get {
             return sightMask;
@@ -58,12 +70,12 @@ public class Actor : MonoBehaviour, IDamageable {
     private void Awake() {
         moveZHash = Animator.StringToHash("move.z");
         moveXHash = Animator.StringToHash("move.x");
-        deadHash = Animator.StringToHash("dead");
+        isAliveHash = Animator.StringToHash("IsAlive");
     }
 
     private void Start() {
         if(anim) {
-            anim.SetBool(deadHash, false);
+            anim.SetBool(isAliveHash, true);
         }
     }
 
@@ -73,11 +85,16 @@ public class Actor : MonoBehaviour, IDamageable {
         }
         stats.currentHP = stats.baseHP;
         OnActorAlive?.Invoke(this);
+        if(Weapon) {
+            Weapon.GraphicsEnabled = true;
+        }
+        rb.simulated = true;
+        rb.velocity = Vector2.zero;
         actors.Add(this);
         if(anim) {
             anim.SetFloat(moveZHash, 0.0f);
             anim.SetFloat(moveXHash, 0.0f);
-            anim.SetBool(deadHash, false);
+            anim.SetBool(isAliveHash, true);
         }
     }
 
@@ -96,15 +113,16 @@ public class Actor : MonoBehaviour, IDamageable {
     }
 
     Ray2D sightRay;
+    RaycastHit2D hit;
     float aimDistance = 7.5f;
-    public bool DamageableOnSight(out Vector2 hitPoint) {
+    public bool DamageableOnSight(out Vector2 hitPoint, float distanceMultiplier = 1f) {
         if(!enabled) {
             hitPoint = Position;
             return false;
         }
         sightRay = new Ray2D(rb.position, rb.transform.up);
-        aimDistance = weapon ? weapon.MaxOptimalRange : 7.5f;
-        RaycastHit2D hit = Physics2D.Raycast(sightRay.origin, sightRay.direction, aimDistance, sightMask);
+        aimDistance = ( weapon ? weapon.MaxOptimalRange : 7.5f ) * distanceMultiplier;
+        hit = Physics2D.Raycast(sightRay.origin, sightRay.direction, aimDistance, sightMask);
         if(hit.collider) {
             hitPoint = hit.point;
             if(hit.collider.TryGetComponent<IDamageable>(out _)) {
@@ -116,8 +134,8 @@ public class Actor : MonoBehaviour, IDamageable {
         return false;
     }
 
-    public bool DamageableOnSight() {
-        return DamageableOnSight(out _);
+    public bool DamageableOnSight(float distanceMultiplier = 1f) {
+        return DamageableOnSight(out _, distanceMultiplier);
     }
 
     Vector2 movement = Vector2.zero;
@@ -146,10 +164,26 @@ public class Actor : MonoBehaviour, IDamageable {
     }
 
     Vector2 targetDirection = Vector3.zero;
-    public void MoveTowards(Vector2 destination) {
+    Vector2 solvedDirection = Vector3.zero;
+    public void MoveTowards(Vector2 destination, float speedMultiplier = 1f, bool avoidCollision = true) {
         targetDirection = destination - Position;
-        targetDirection = Vector2.ClampMagnitude(targetDirection, 1f);
-        Move(targetDirection, Space.World);
+        if(avoidCollision) {
+            solvedDirection = targetDirection.normalized;
+            hit = Physics2D.Raycast(
+                Position,
+                solvedDirection,
+                Mathf.Min(stats.moveSpeed * speedMultiplier, targetDirection.magnitude),
+                sightMask
+                );
+            if(hit.collider) {
+                solvedDirection = Vector2.Reflect(targetDirection, hit.normal);
+            }
+            solvedDirection = Vector2.ClampMagnitude(solvedDirection, 1f);
+            Move(solvedDirection * speedMultiplier, Space.World);
+        } else {
+            targetDirection = Vector2.ClampMagnitude(targetDirection, 1f);
+            Move(targetDirection * speedMultiplier, Space.World);
+        }
     }
 
     public void Rotate(float ammount) {
@@ -161,13 +195,13 @@ public class Actor : MonoBehaviour, IDamageable {
 
     Vector2 direction = Vector2.up;
     float rotateAmmount = 0f;
-    public void AimTowards(Vector2 targetPoint, float deltaTime = 1f) {
+    public void AimTowards(Vector2 targetPoint, float deltaTime = 1f, float speedMultiplier = 1f) {
         if(!enabled) {
             return;
         }
         direction = ( targetPoint - Position ).normalized;
         rotateAmmount = Vector3.Cross(direction, transform.up).z;
-        Rotate(rotateAmmount * 300f * deltaTime);
+        Rotate(rotateAmmount * 300f * deltaTime * speedMultiplier);
     }
 
     public bool CanAttack {
@@ -206,14 +240,19 @@ public class Actor : MonoBehaviour, IDamageable {
                 damageFX.transform.parent = transform.parent;
             }
             if(anim) {
-                anim.SetBool(deadHash, true);
+                anim.SetBool(isAliveHash, false);
             }
             if(rb) {
                 rb.velocity = Vector2.zero;
                 rb.angularVelocity = 0f;
             }
+            if(Weapon) {
+                Weapon.GraphicsEnabled = false;
+            }
             OnActorDeath?.Invoke(this);
             enabled = false;
+            rb.velocity = Vector2.zero;
+            rb.simulated = false;
         }
     }
 

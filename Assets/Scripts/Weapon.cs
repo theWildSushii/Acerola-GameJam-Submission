@@ -23,6 +23,7 @@ public class Weapon : MonoBehaviour {
     [SerializeField] private LayerMask bulletLayerMask;
     [Min(1)]
     [SerializeField] private int physicsSubsteps = 1;
+    [SerializeField] private Animator anim;
     [SerializeField] private Transform bulletVfxPrefab;
     [SerializeField] private ParticleSystem defaultDamageFX;
     [SerializeField] private FloatingAudio defaultDamageSFX;
@@ -31,12 +32,17 @@ public class Weapon : MonoBehaviour {
     [SerializeField] private UnityEvent OnWeaponReload;
     [SerializeField] private UnityEvent<string> OnWeaponAmmoCounterUpdated;
 
+    [SerializeField] private UnityEvent<bool> OnGraphicsEnabledChanged;
+    [SerializeField] private UnityEvent OnGraphicsEnable;
+    [SerializeField] private UnityEvent OnGraphicsDisable;
+
     private float timeToNextUse = 0f;
 
     private ObjectPool<Transform> bulletVfxPool;
     private List<Bullet> activeBullets = new List<Bullet>();
 
     private int currentAmmo = 10;
+    private int fireHash = 0;
 
     public bool CanBeUsed {
         get {
@@ -61,7 +67,6 @@ public class Weapon : MonoBehaviour {
         }
     }
 
-
     public float FireRate {
         get {
             return fireRate;
@@ -77,64 +82,15 @@ public class Weapon : MonoBehaviour {
         }
     }
 
-    private void OnEnable() {
-        UpdateAmmoCounter();
-    }
-
-    private void OnDisable() {
-        StopAllCoroutines();
-        IsReloading = false;
-    }
-
-    public void Use() {
-        if(CanBeUsed) {
-            timeToNextUse = Time.time + ( 1f / fireRate );
-            StopAllCoroutines();
-            IsReloading = false;
-            currentAmmo--;
-            UpdateAmmoCounter();
-            for(int i = 0; i < bulletsToSpawn; i++) {
-                activeBullets.Add(new Bullet(this));
-            }
-            if(currentAmmo <= 0) {
-                Reload();
-            }
-            OnWeaponUse?.Invoke();
-        } else {
-            if(currentAmmo <= 0 && !IsReloading) {
-                Reload();
+    public bool GraphicsEnabled {
+        set {
+            OnGraphicsEnabledChanged?.Invoke(value);
+            if(value) {
+                OnGraphicsEnable?.Invoke();
+            } else {
+                OnGraphicsDisable?.Invoke();
             }
         }
-    }
-
-    public void UpdateAmmoCounter() {
-        OnWeaponAmmoCounterUpdated?.Invoke(currentAmmo + "/" + ammoCapacity);
-    }
-
-    public void Reload() {
-        if(IsReloading) {
-            return;
-        }
-        if(currentAmmo < ammoCapacity) {
-            StartCoroutine(ReloadRoutine());
-        }
-    }
-
-    private IEnumerator ReloadRoutine() {
-        IsReloading = true;
-        OnWeaponReload?.Invoke();
-        if(emptyBulletsOnReload) {
-            currentAmmo = 0;
-            UpdateAmmoCounter();
-        }
-        while(currentAmmo < ammoCapacity) {
-            yield return new WaitForSeconds(reloadTime);
-            currentAmmo += ammoReloaded;
-            UpdateAmmoCounter();
-        }
-        currentAmmo = ammoCapacity;
-        UpdateAmmoCounter();
-        IsReloading = false;
     }
 
     private void Awake() {
@@ -142,6 +98,16 @@ public class Weapon : MonoBehaviour {
         if(bulletVfxPrefab) {
             bulletVfxPool = new ObjectPool<Transform>(OnVfxCreate, OnVfxGet, OnVfxRelease, OnVfxDestroy, false);
         }
+        fireHash = Animator.StringToHash("Fire");
+    }
+
+    private void OnEnable() {
+        UpdateAmmoCounter();
+    }
+
+    private void OnDisable() {
+        StopAllCoroutines();
+        IsReloading = false;
     }
 
     RaycastHit2D hit;
@@ -202,6 +168,60 @@ public class Weapon : MonoBehaviour {
         }
     }
 
+    public void Use() {
+        if(CanBeUsed) {
+            timeToNextUse = Time.time + ( 1f / fireRate );
+            StopAllCoroutines();
+            IsReloading = false;
+            currentAmmo--;
+            UpdateAmmoCounter();
+            for(int i = 0; i < bulletsToSpawn; i++) {
+                activeBullets.Add(new Bullet(this));
+            }
+            if(currentAmmo <= 0) {
+                Reload();
+            }
+            OnWeaponUse?.Invoke();
+            if(anim) {
+                anim.SetTrigger(fireHash);
+            }
+        } else {
+            if(currentAmmo <= 0 && !IsReloading) {
+                Reload();
+            }
+        }
+    }
+
+    public void UpdateAmmoCounter() {
+        OnWeaponAmmoCounterUpdated?.Invoke(currentAmmo + "/" + ammoCapacity);
+    }
+
+    public void Reload() {
+        if(IsReloading) {
+            return;
+        }
+        if(currentAmmo < ammoCapacity) {
+            StartCoroutine(ReloadRoutine());
+        }
+    }
+
+    private IEnumerator ReloadRoutine() {
+        IsReloading = true;
+        OnWeaponReload?.Invoke();
+        if(emptyBulletsOnReload) {
+            currentAmmo = 0;
+            UpdateAmmoCounter();
+        }
+        while(currentAmmo < ammoCapacity) {
+            yield return new WaitForSeconds(reloadTime);
+            currentAmmo += ammoReloaded;
+            UpdateAmmoCounter();
+        }
+        currentAmmo = ammoCapacity;
+        UpdateAmmoCounter();
+        IsReloading = false;
+    }
+
     private Transform OnVfxCreate() {
         return Instantiate(bulletVfxPrefab);
     }
@@ -223,6 +243,14 @@ public class Weapon : MonoBehaviour {
     private void OnVfxDestroy(Transform vfxTransform) {
         Destroy(vfxTransform.gameObject);
     }
+
+#if UNITY_EDITOR
+    private void OnValidate() {
+        if(!anim) {
+            anim = GetComponent<Animator>();
+        }
+    }
+#endif
 
     public class Bullet {
         public Vector3 position = Vector3.zero;

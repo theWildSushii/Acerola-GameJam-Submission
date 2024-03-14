@@ -1,3 +1,5 @@
+using UnityEngine;
+
 [System.Serializable]
 public class ActorStats {
 
@@ -13,6 +15,15 @@ public class ActorStats {
         }
         protected set {
             currentHP = value * baseHP;
+        }
+    }
+
+    public float HP {
+        get {
+            return currentHP;
+        }
+        set {
+            currentHP = Mathf.Clamp(value, 0f, baseHP);
         }
     }
 }

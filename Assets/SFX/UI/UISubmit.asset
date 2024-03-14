@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ea3dfb3a3e2d264ca407eada6fdbe98, type: 3}
+  m_Name: UISubmit
+  m_EditorClassIdentifier: 
+  clips:
+  - {fileID: 8300000, guid: 13644082dd8b7e143b98f5d8b0290bf2, type: 3}
+  pitchRange: {x: 1, y: 1}
+  output: {fileID: 3780265814444718267, guid: 62e97c2a3e5d3704cb94b7977000a146, type: 2}
+  priority: 256
+  volumeRange: {x: 1, y: 1}
+  stereoPan: 0
+  spatialBlend: 0
+  dopplerLevel: 1
+  minDistanceRange: {x: 1, y: 1}
+  maxDistance: 500
+  spread: 0
+  simulateSpeedOfSound: 0

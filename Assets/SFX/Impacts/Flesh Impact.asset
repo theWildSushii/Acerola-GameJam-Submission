@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ea3dfb3a3e2d264ca407eada6fdbe98, type: 3}
+  m_Name: Flesh Impact
+  m_EditorClassIdentifier: 
+  clips:
+  - {fileID: 8300000, guid: 4358f1b6c65ee0a49843dd1574740c71, type: 3}
+  - {fileID: 8300000, guid: 6237c7c2195a47e4987f59f5642e9ce1, type: 3}
+  - {fileID: 8300000, guid: 2bca339effc7a544ea41690967d7068f, type: 3}
+  - {fileID: 8300000, guid: 8261babc8f370944ebe82c693083d7db, type: 3}
+  - {fileID: 8300000, guid: 6734e703249ca3244a7da623da0966cf, type: 3}
+  pitchRange: {x: 0.8, y: 1.2}
+  output: {fileID: -1848853717168834708, guid: 62e97c2a3e5d3704cb94b7977000a146, type: 2}
+  priority: 128
+  volumeRange: {x: 1, y: 1}
+  stereoPan: 0
+  spatialBlend: 1
+  dopplerLevel: 1
+  minDistanceRange: {x: 20, y: 20}
+  maxDistance: 500
+  spread: 0
+  simulateSpeedOfSound: 1
