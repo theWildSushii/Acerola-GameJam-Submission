@@ -19,7 +19,6 @@ public class SettingsManager : MonoBehaviour {
     [SerializeField] private UnityEvent<float> OnMusicVolumeLoad;
     [SerializeField] private UnityEvent<float> OnEffectsVolumeLoad;
     [SerializeField] private UnityEvent<float> OnUIVolumeLoad;
-    [SerializeField] private UnityEvent<bool> OnFullscreenOptionsAvailable;
     [SerializeField] private UnityEvent<float> OnMouseSensitivityLoad;
     [SerializeField] private UnityEvent<float> OnGamepadSensitivityLoad;
     [SerializeField] private UnityEvent<float> OnAimAssistIntensityLoad;
@@ -72,7 +71,6 @@ public class SettingsManager : MonoBehaviour {
                 OnFullscreenModeIndexLoad?.Invoke(0);
                 break;
         }
-        OnFullscreenOptionsAvailable?.Invoke(Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen);
 
         resolutionsDropdown.ClearOptions();
         int i = 0;
@@ -140,7 +138,6 @@ public class SettingsManager : MonoBehaviour {
                 Screen.fullScreen = true;
                 break;
         }
-        OnFullscreenOptionsAvailable?.Invoke(Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen);
     }
 
     public void SetResolutionIndex(int i) {
